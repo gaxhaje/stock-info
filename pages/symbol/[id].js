@@ -1,1 +1,0 @@
-// pages/symbol/[id].js

@@ -3,6 +3,7 @@ import path from 'path';
 import csv from 'csvtojson';
 
 export default async (req, res) => {
+  // Read in CSV and parse only for demo.
   const nasdaqlisted = await csv({delimiter: ['|']}).fromFile('nasdaqlisted.txt');
   const otherlisted  = await csv({delimiter: ['|']}).fromFile('otherlisted.txt');
   const listedStocks = nasdaqlisted.concat(otherlisted)
@@ -24,13 +25,15 @@ export default async (req, res) => {
       }
       // names must be equal
       return 0;
-    });
+    })
+    .filter(x => !x.symbol.includes('File Creation Time'));
 
-  const { companyName } = req.query;
+  const { q } = req.query;
   let stocks = listedStocks;
 
-  if (companyName) {
-    stocks = stocks.filter(stock => stock.security_name.toLowerCase().includes(companyName.toLowerCase()));
+  if (q) {
+    // console.log('q', q);
+    stocks = stocks.filter(stock => stock.security_name.toLowerCase().includes(q.toLowerCase()));
   }
 
   res.status(200).json(stocks);

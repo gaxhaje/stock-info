@@ -1,65 +1,62 @@
 // components/StockAutocomplete.js
 
-import useSWR from 'swr';
+// SWR is a React Hooks library for remote data fetching.
 import fetch from 'isomorphic-unfetch';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { debounce } from 'throttle-debounce';
+import Link from 'next/link';
 
-// function sleep(delay = 0) {
-//   return new Promise(resolve => {
-//     setTimeout(resolve, delay);
-//   });
-// }
-
-function search() {
-
-  const { data, error } = useSWR(
-    `/api/symbol_autocomplete?q=' + query.q : ''}`,
-    fetcher
-  );
-  // The following line has optional chaining, added in Next.js v9.1.5,
-  // is the same as `data && data.author`
-  const symbol = data?.symbol;
-  let securityName = data?.security_name;
-
-  // if (!data) securityName = 'Loading...';
-  // if (error) securityName = 'Failed to fetch the company.';
-}
+const PostLink = props => (
+  <Link href="/stock/[id]" as={`/stock/${props.option.symbol}`}>
+    <a>{props.option.symbol} | {props.option.security_name}</a>
+  </Link>
+);
 
 export default function StockAutocomplete() {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
-  const loading = open && options.length === 0;
+  const [inputValue, setInputValue] = useState('');
+  const loading = open && inputValue.length !== 0;
+
+  // API request
+  const fetchData = useMemo(
+    () =>
+      debounce(1000, (input, callback) => {
+        const { input: q } = input;
+        return fetch(`/api/symbol_autocomplete?q=${q}`)
+          .then(r => r.json())
+          .then(data =>  callback(data));
+      }),
+    [],
+  );
+
+  // handle input change
+  const handleChange = event => setInputValue(event.target.value);
+
+  // handle selected input
+  const handleSelected = event => console.log(event.target.value);
 
   useEffect(() => {
     let active = true;
 
-    if (!loading) {
+    if (!loading && inputValue === '') {
+      setOptions([]);
       return undefined;
     }
 
-    (async () => {
-      const response = await fetch('https://country.register.gov.uk/records.json?page-size=5000');
-      // await sleep(1e3); // For demo purposes.
-      const countries = await response.json();
-
+    fetchData({ input: inputValue }, results => {
       if (active) {
-        setOptions(Object.keys(countries).map(key => countries[key].item[0]));
+        setOptions(results || []);
       }
-    })();
+    });
 
     return () => {
       active = false;
     };
-  }, [loading]);
-
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
+  }, [inputValue, fetchData]);
 
   return (
     <Autocomplete
@@ -75,8 +72,7 @@ export default function StockAutocomplete() {
       onClose={() => {
         setOpen(false);
       }}
-      getOptionSelected={(option, value) => option.name === value.name}
-      getOptionLabel={option => option.name}
+      getOptionLabel={option => `${option.symbol} | ${option.security_name}`}
       options={options}
       loading={loading}
       renderInput={params => (
@@ -85,16 +81,23 @@ export default function StockAutocomplete() {
           label="Find a Symbol"
           fullWidth
           variant="outlined"
+          onChange={handleChange}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
               <Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {/*loading ? <CircularProgress color="inherit" size={20} /> : null*/}
+                {loading ? '' : null}
               </Fragment>
             ),
           }}
         />
       )}
+      renderOption={(option, { inputValue }) => {
+        return (
+          <PostLink option={option} />
+        );
+      }}
     />
   );
 }
