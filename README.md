@@ -68,6 +68,7 @@ Search for a particular publicly traded company and display a price history for 
    - `/pages/index.js` main page of the application
    - `/components/Header.js` Header components
    - `/components/Layout.js` Site layout
+   - `/components/StockAutocomplete.js` Search input field
  
  project structure
  ```
