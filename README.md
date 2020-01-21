@@ -4,11 +4,11 @@
 Search for a particular publicly traded company and display a price history for a selected symbol.
 
 - [Getting Started](#getting-started)
-- [Configuration options](#configuration-options)
-  * [iexcloud.io](#iexclud.io)
-  * [token.json](#token.json)
-- [Features](#features)
+- [Building and Starting](#building-and-starting)
+- [API](#api)
+- [Improvements](#improvements-to-consider)
 - [Framework](#framework)
+- [License](#license-mit)
 
 #### Getting started
   Download the application.
@@ -21,15 +21,15 @@ Search for a particular publicly traded company and display a price history for 
 #
   `Development`
   
-  `IEX Cloud` provides a `free to start` API to retrieve historical prices:  [https://www.iexcloud.io/docs/api/#historical-prices](https://www.iexcloud.io/docs/api/#historical-prices)
+  IEX Cloud provides a `free to start` API to retrieve historical prices:  [https://www.iexcloud.io/docs/api/#historical-prices](https://www.iexcloud.io/docs/api/#historical-prices)
   
   First update `token.json`:
   ```
   {
-    "iex_token": "<your free acount token>"
+    "iex_token": "<your iexcloud account token>"
   }
   ```
-  Note: there is a token already provided but they have limitations on number of messages retrieved per mont.
+  `Note:` there is a token already provided but they have limitations on number of messages retrieved per mont.
   
   Next, you can preview the application in `development` mode by running:
   ```
@@ -62,7 +62,36 @@ Search for a particular publicly traded company and display a price history for 
   ```
   Now you can see your running application on [`http://localhost:3000/`](http://localhost:3000)
   
-  ### Framework
+  #### API
+   - `/pages/stock/[id].json` displays stock chart. See Google charts API on [candlestickchart](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)
+   - `/pages/api/symbol_autocomplete.js` handles requests from the autocomplete search box
+   - `/pages/index.js` main page of the application
+   - `/components/Header.js` Header components
+   - `/components/Layout.js` Site layout
+ 
+ project structure
+ ```
+    ├── LICENSE
+    ├── README.md
+    ├── components
+    │   ├── Header.js
+    │   ├── Layout.js
+    │   └── StockAutocomplete.js
+    ├── nasdaqlisted.txt
+    ├── otherlisted.txt
+    ├── package-lock.json
+    ├── package.json
+    ├── pages
+    │   ├── _document.jsx
+    │   ├── api
+    │   │   └── symbol_autocomplete.js
+    │   ├── index.js
+    │   └── stock
+    │       └── [id].js
+    └── token.json
+```
+
+  #### Framework
   
   - The React framework for the project is [Next.js](nextjs.org). Next.js is a React framework that provides the follwing features (and more):
     -  Server rendering
@@ -70,5 +99,11 @@ Search for a particular publicly traded company and display a price history for 
     -  CSS-in-JS `styled-jsx`. See [https://github.com/zeit/styled-jsx](https://github.com/zeit/styled-jsx)
     -  Automatic code splitting, filesystem based routing, hot code reloading and universal rendering. `one of my favorite features about it`
     -  Complete control over Babel and Webpack. Customizable server, routing and next-plugins.
+-  Stock charts
+    - Google Charts [candlestickchart](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)
 
+  #### Improvements to consider
+  - Add user friendly message when token has exceeded it's free acount limits
+  - Testing
+  - 
 #### License MIT
