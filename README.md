@@ -105,5 +105,5 @@ Search for a particular publicly traded company and display a price history for 
   #### Improvements to consider
   - Add user friendly message when token has exceeded it's free acount limits
   - Testing
-  - 
+  
 #### License MIT
