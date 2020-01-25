@@ -78,7 +78,7 @@ export default function StockAutocomplete() {
       renderInput={params => (
         <TextField
           {...params}
-          label="Find a Symbol"
+          label="Find By Company Name"
           fullWidth
           variant="outlined"
           onChange={handleChange}
